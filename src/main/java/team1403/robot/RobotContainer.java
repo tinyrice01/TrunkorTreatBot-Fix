@@ -31,9 +31,11 @@ public class RobotContainer {
     m_motor = new Motor();
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
 
+    //if already at the bottom then pressing this button will move it up
     m_driverController.rightBumper().and(() -> m_motor.m_atBottom).onTrue(new InstantCommand(() -> m_motor.setUp()));
+    
+    //if already at the top then pressing this button will move it down
     m_driverController.rightBumper().and(() -> m_motor.m_atTop).onTrue(new InstantCommand(() -> m_motor.setDown()));
-
   }
   
   /**
