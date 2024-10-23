@@ -26,10 +26,9 @@ public class Motor extends SubsystemBase {
     public int m_setpoint = 0; // set to the bottom
 
     public Motor() {
-        m_motor = new TalonFX(Constants.Motor.motorID, MotorType.kBrushless);
+        m_motor = new TalonFX(Constants.Motor.motorID);
         m_absoluteEncoder = new DutyCycleEncoder(Constants.Motor.encoderID);
 
-        m_motor.setIdleMode(IdleMode.kBrake);
         m_motorSpeed = 0;
     }
 
@@ -50,7 +49,7 @@ public class Motor extends SubsystemBase {
     }
 
     public void setMotorSpeed(double speed) {
-        m_motor.setSpeed(speed);
+        m_motor.set(speed);
     }
 
     private boolean isInSafeBounds() {
