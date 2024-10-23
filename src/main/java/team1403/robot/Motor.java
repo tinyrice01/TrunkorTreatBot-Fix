@@ -1,39 +1,36 @@
 package team1403.robot;
 
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.DigitalInput;
 
-import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import team1403.robot.Constants;
 
 public class Motor extends SubsystemBase {
     private TalonFX m_motor;
-    private DutyCycleEncoder m_absoluteEncoder;
+    private DigitalInput m_topLimit;
+    private DigitalInput m_bottomLimit;
 
     private double m_motorSpeed;
-    private double m_angle;
     
     public boolean m_atTop;
     public boolean m_atBottom;
 
-    public int m_setpoint = 0; // set to the bottom
+    public String m_target;
 
     public Motor() {
         m_motor = new TalonFX(Constants.Motor.motorID);
-        m_absoluteEncoder = new DutyCycleEncoder(Constants.Motor.encoderID);
+        m_topLimit = new DigitalInput(Constants.Motor.topLimitPort);
+        m_bottomLimit = new DigitalInput(Constants.Motor.bottomLimitPort);
 
         m_motorSpeed = 0;
     }
 
-    public double getAngle() {
-        return m_angle;
+    public double getSpeed() {
+        m_motorSpeed = m_motor.get();
+        return m_motorSpeed;
     }
 
     public void stopMotor() {
@@ -41,11 +38,17 @@ public class Motor extends SubsystemBase {
     }
 
     public void setUp() {
-        m_setpoint = Constants.Motor.upAngle;
+        if (m_atBottom) {
+            setMotorSpeed(0.1);
+            m_target = "top";
+        }
     }
 
     public void setDown() {
-        m_setpoint = Constants.Motor.downAngle;
+        if (m_atTop) {
+            setMotorSpeed(-0.1);
+            m_target = "bottom";
+        }
     }
 
     public void setMotorSpeed(double speed) {
@@ -53,41 +56,32 @@ public class Motor extends SubsystemBase {
     }
 
     private boolean isInSafeBounds() {
-        return getAngle() > 130 && getAngle() < 145;
+        return m_motor.get() > 0.1 && m_motor.get() < -0.1;
     }
 
     @Override
     public void periodic() {
-        m_angle = m_absoluteEncoder.getAbsolutePosition() * 360;
-        
-        if (m_angle < m_setpoint) {
-            setMotorSpeed(0.1);
-        }
-        if (m_angle > m_setpoint) {
-            setMotorSpeed(-0.1);
-        }
-        
-        if (m_angle == Constants.Motor.upAngle) {
+        if (m_topLimit.get() && m_target.equals("top")) {
             m_atTop = true;
+            stopMotor();
         }
-        else {
+        if (!m_topLimit.get()) {
             m_atTop = false;
         }
-        if (m_angle == Constants.Motor.downAngle) {
+        if (m_bottomLimit.get() && m_target.equals("bottom")) {
             m_atBottom = true;
+            stopMotor();
         }
-        else {
+        if (!m_bottomLimit.get()) {
             m_atBottom = false;
         }
-
         if (!isInSafeBounds()) {
             stopMotor();
         }
 
-        SmartDashboard.putBoolean("At Top", m_angle == Constants.Motor.upAngle);
-        SmartDashboard.putBoolean("At Bottom", m_angle == Constants.Motor.downAngle);
-        SmartDashboard.putNumber("Angle", m_angle);
+        SmartDashboard.putBoolean("At Top", m_topLimit.get());
+        SmartDashboard.putBoolean("At Bottom", m_bottomLimit.get());
+        SmartDashboard.putString("Target", m_target);
         SmartDashboard.putNumber("Speed", m_motorSpeed);
-        SmartDashboard.putNumber("Setpoint angle", m_setpoint);
     }
 }
