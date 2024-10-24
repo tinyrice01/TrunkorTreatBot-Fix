@@ -39,14 +39,14 @@ public class Motor extends SubsystemBase {
 
     public void setUp() {
         if (m_atBottom) {
-            setMotorSpeed(0.1);
+            setMotorSpeed(Constants.Motor.speed);
             m_target = "top";
         }
     }
 
     public void setDown() {
         if (m_atTop) {
-            setMotorSpeed(-0.1);
+            setMotorSpeed(-1 * Constants.Motor.speed);
             m_target = "bottom";
         }
     }
@@ -56,7 +56,7 @@ public class Motor extends SubsystemBase {
     }
 
     private boolean isInSafeBounds() {
-        return m_motor.get() > 0.1 && m_motor.get() < -0.1;
+        return m_motor.get() > Constants.Motor.speed && m_motor.get() < -1 * Constants.Motor.speed;
     }
 
     @Override
@@ -82,6 +82,6 @@ public class Motor extends SubsystemBase {
         SmartDashboard.putBoolean("At Top", m_topLimit.get());
         SmartDashboard.putBoolean("At Bottom", m_bottomLimit.get());
         SmartDashboard.putString("Target", m_target);
-        SmartDashboard.putNumber("Speed", m_motorSpeed);
+        SmartDashboard.putNumber("Speed", getSpeed());
     }
 }

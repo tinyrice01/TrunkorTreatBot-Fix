@@ -4,6 +4,8 @@
 
 package team1403.robot;
 
+import javax.management.InstanceAlreadyExistsException;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -32,10 +34,12 @@ public class RobotContainer {
     m_driverController = new CommandXboxController(Constants.Driver.pilotPort);
 
     //if already at the bottom then pressing this button will move it up
-    m_driverController.rightBumper().and(() -> m_motor.m_atBottom).onTrue(new InstantCommand(() -> m_motor.setUp()));
+    //m_driverController.rightBumper().and(() -> m_motor.m_atBottom).onTrue(new InstantCommand(() -> m_motor.setUp()));
+    m_driverController.povUp().onTrue(new InstantCommand(() -> m_motor.setUp()));
     
     //if already at the top then pressing this button will move it down
-    m_driverController.rightBumper().and(() -> m_motor.m_atTop).onTrue(new InstantCommand(() -> m_motor.setDown()));
+    //m_driverController.rightBumper().and(() -> m_motor.m_atTop).onTrue(new InstantCommand(() -> m_motor.setDown()));
+    m_driverController.povDown().onTrue(new InstantCommand(() -> m_motor.setDown()));
   }
   
   /**
