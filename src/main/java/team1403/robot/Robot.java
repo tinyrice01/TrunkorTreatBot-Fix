@@ -41,7 +41,6 @@ public class Robot extends TimedRobot {
     DriverStation.startDataLog(DataLogManager.getLog());
 
     m_robotContainer = new RobotContainer();
-    m_combinedCommand = m_robotContainer.getTeleopCommand();
 
   }
 
@@ -101,7 +100,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    m_combinedCommand.schedule();
   }
 
   /** This function is called periodically during operator control. */

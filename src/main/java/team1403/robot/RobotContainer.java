@@ -6,10 +6,11 @@ package team1403.robot;
 
 import javax.management.InstanceAlreadyExistsException;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team1403.robot.Motor;
 import team1403.robot.Constants;
 
@@ -22,6 +23,7 @@ import team1403.robot.Constants;
 public class RobotContainer {
 
   private Motor m_motor;
+  private DigitalInput button_up = new DigitalInput(3);
   private final CommandXboxController m_driverController;
 
   private Command m_teleopCommand;
@@ -39,7 +41,8 @@ public class RobotContainer {
     
     //if already at the top then pressing this button will move it down
     //m_driverController.rightBumper().and(() -> m_motor.m_atTop).onTrue(new InstantCommand(() -> m_motor.setDown()));
-    m_driverController.povDown().onTrue(new InstantCommand(() -> m_motor.setDown()));
+   
+    new Trigger(() -> button_up.get()).onTrue(new InstantCommand(() -> m_motor.setDown()));
   }
   
   /**
